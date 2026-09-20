@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Center</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f5f6fa;color:#171717;min-height:100vh}
+header{height:65px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 12px #0001;position:sticky;top:0;z-index:1000}
+.menu{width:44px;height:44px;border:0;border-radius:13px;background:#f0f1f5;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer}
+.menu span{width:22px;height:3px;background:#222;border-radius:5px}
+.logo{font-size:20px;font-weight:800}
+.side{position:fixed;left:-280px;top:0;width:280px;height:100vh;background:#fff;z-index:2000;padding-top:80px;box-shadow:5px 0 20px #0002;transition:.3s}
+.side.active{left:0}
+.side a{display:flex;gap:12px;align-items:center;padding:18px 23px;color:#222;text-decoration:none;border-bottom:1px solid #eee;font-weight:600}
+.overlay{position:fixed;inset:0;background:#0008;display:none;z-index:1500}
+.overlay.active{display:block}
+.container{max-width:950px;margin:auto;padding:22px 15px 50px}
+.welcome{background:linear-gradient(135deg,#111827,#374151);color:#fff;padding:25px;border-radius:20px;margin-bottom:25px}
+.welcome h1{font-size:25px;margin-bottom:7px}
+.welcome p{color:#d7dbe2}
+.title{font-size:21px;font-weight:800;margin-bottom:15px}
+.jobs{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card{background:#fff;border-radius:20px;padding:20px;border:1px solid #eee;box-shadow:0 5px 18px #0001;transition:.2s}
+.card:hover{transform:translateY(-3px)}
+.icon{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;margin-bottom:15px}
+.tiktok{background:#111;color:#fff}
+.facebook{background:#e8f1ff;color:#1877f2}
+.instagram{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff}
+.card h3{font-size:19px;margin-bottom:8px}
+.price{color:#16a34a;font-weight:700;margin-bottom:8px}
+.progress{color:#4b5563;font-size:14px;font-weight:700;background:#f1f5f9;padding:6px 12px;border-radius:8px;margin-bottom:15px;display:inline-block}
+.btn{width:100%;padding:13px;border:0;border-radius:12px;background:#111827;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.btn:hover{opacity:.9}
+.maintenance{background:#fff1e8;color:#c2410c;cursor:not-allowed}
+.info{display:none;background:#fff;padding:22px;border-radius:18px;box-shadow:0 5px 18px #0001}
+.info.active{display:block}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:3000}
+.modal.show{display:flex}
+.box{width:100%;max-width:430px;background:#fff;border-radius:22px;padding:25px;text-align:center}
+.box h2{margin-bottom:12px}
+.reward-badge{background:#fffbeb;color:#b45309;padding:8px 15px;border-radius:10px;font-weight:700;display:inline-block;margin-bottom:10px;border:1px solid #fde68a;font-size:15px}
+.task{background:#f5f6fa;border-radius:14px;padding:15px;margin:5px 0 15px;text-align:left;line-height:1.65}
+.open,.done,.close{width:100%;padding:14px;border:0;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer}
+.open{background:#111;color:#fff;margin-bottom:10px}
+.done{background:#16a34a;color:#fff}
+.close{background:#eee;margin-top:10px}
+.spinner{width:40px;height:40px;border:4px solid #ddd;border-top-color:#111;border-radius:50%;animation:spin 1s linear infinite;margin:15px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success{color:#16a34a;font-weight:700;line-height:1.6}
+@media(max-width:700px){.jobs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="menu" onclick="toggleMenu()" aria-label="Mở menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo">JOB CENTER</div>
+  <div style="width:44px"></div>
+</header>
+
+<div class="side" id="side">
+  <a href="#" onclick="showSection('home');return false">🏠 Trang chủ</a>
+  <a href="#" onclick="showSection('support');return false">💬 Hỗ trợ</a>
+  <a href="#" onclick="showSection('history');return false">🕘 Lịch sử</a>
+  <a href="#" onclick="showSection('home');return false">🖥️ Màn hình chính</a>
+</div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="container">
+  <section id="home">
+    <div class="welcome">
+      <h1>Xin chào 👋</h1>
+      <p>Chọn công việc bạn muốn thực hiện.</p>
+    </div>
+
+    <div class="title">Danh sách công việc</div>
+
+    <div class="jobs">
+      <div class="card">
+        <div class="icon tiktok">
+          <svg viewBox="0 0 448 512" width="30" fill="currentColor"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
+        </div>
+        <h3>Job TikTok</h3>
+        <p class="price">40 - 120đ / job</p>
+        <div class="progress" id="tiktokProgress">0/100</div>
+        <button class="btn" onclick="openJob()">Làm job TikTok</button>
+      </div>
+
+      <div class="card">
+        <div class="icon facebook">
+          <svg viewBox="0 0 320 512" width="28" fill="currentColor"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
+        </div>
+        <h3>Job Facebook</h3>
+        <p class="price">30 - 90đ / job</p>
+        <button class="btn maintenance" disabled>Bảo trì đến 25/9/2026</button>
+      </div>
+
+      <div class="card">
+        <div class="icon instagram">
+          <svg viewBox="0 0 448 512" width="30" fill="currentColor"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+        </div>
+        <h3>Job Instagram</h3>
+        <p class="price">20 - 200đ / job</p>
+        <button class="btn maintenance" disabled>Bảo trì đến 25/9/2026</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="support" class="info">
+    <h2>💬 Hỗ trợ</h2>
+    <p style="margin-top:10px">Nếu gặp lỗi khi nhận job, hãy liên hệ quản trị viên.</p>
+  </section>
+
+  <section id="history" class="info">
+    <h2>🕘 Lịch sử</h2>
+    <p id="historyText" style="margin-top:10px">Chưa có job nào được hoàn thành.</p>
+  </section>
+</div>
+
+<div class="modal" id="modal">
+  <div class="box" id="jobBox">
+    <h2>🎵 Job TikTok</h2>
+    <div class="reward-badge" id="jobRewardText">💰 Tiền thưởng: 0đ</div>
+    <div class="task">
+      <b>Thao tác cần làm:</b><br>
+      1. Bấm <b>Mở TikTok</b> bên dưới.<br>
+      2. Thực hiện thao tác trên kênh TikTok được mở.<br>
+      3. Quay lại trang này.<br>
+      4. Bấm <b>Đã hoàn thành</b>.
+    </div>
+    <button class="open" onclick="openTikTok()">🎵 Mở TikTok</button>
+    <button class="done" onclick="completeJob()">✅ Đã hoàn thành</button>
+    <button class="close" onclick="closeJob()">Đóng</button>
+  </div>
+</div>
+
+<script>
+const users = [
+"tiktok","mrbeast","netflix","espn","nba","nasa","adidas","nike","spotify","amazon",
+"youtube","google","microsoft","samsung","xbox","playstation","minecraft","roblox","fortnite","lego",
+"disney","pixar","marvel","dc","wwe","ufc","f1","redbull","pepsi","cocacola",
+"gucci","prada","adobe","canva","capcut","duolingo","bbc","cnn","natgeo","discovery",
+"history","ted","coursera","harvard","mit","stanford","caltech","tesla","nvidia","intel",
+"amd","oneplus","xiaomi","oppo","vivo","realme","asus","lenovo","dell","hp",
+"logitech","steam","epicgames","riotgames","playvalorant","leagueoflegends","pokemon","pubgmobile","callofduty","genshinimpact",
+"honkaistarrail","valorant","freefire","brawlstars","supercell","fifa","realmadrid","fcbarcelona","manchesterunited","liverpoolfc",
+"fcbayern","psg","arsenal","chelseafc","mancity","inter","acmilan","juventus","championsleague","formula1",
+"motogp","wimbledon","nba2k","gaming","football","sports","music","official","playstationasia","officialpokemon"
+];
+
+let selectedUser = "";
+let lastJob = localStorage.getItem("lastJob");
+let jobCount = 0;
+const MAX_JOBS = 100;
+let currentReward = 0;
+
+// Khởi tạo app & kiểm tra ngày
+window.onload = function() {
+  let today = new Date().toLocaleDateString("vi-VN");
+  let storedDate = localStorage.getItem("jobDate");
+  
+  if (storedDate !== today) {
+    // Reset nếu qua ngày mới
+    jobCount = 0;
+    localStorage.setItem("jobDate", today);
+    localStorage.setItem("jobCount", jobCount);
+  } else {
+    // Lấy lại dữ liệu hôm nay
+    jobCount = parseInt(localStorage.getItem("jobCount") || "0");
+  }
+  
+  document.getElementById("tiktokProgress").textContent = jobCount + "/" + MAX_JOBS;
+  
+  if(lastJob) {
+    document.getElementById("historyText").textContent = lastJob;
+  }
+}
+
+function toggleMenu(){
+  document.getElementById("side").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+
+function showSection(section){
+  document.getElementById("home").style.display = section === "home" ? "block" : "none";
+  document.getElementById("support").classList.toggle("active",section === "support");
+  document.getElementById("history").classList.toggle("active",section === "history");
+  if(document.getElementById("side").classList.contains("active")) toggleMenu();
+}
+
+function openJob(){
+  if(jobCount >= MAX_JOBS) {
+    alert("Bạn đã làm hết giới hạn job, vui lòng chờ vào ngày mai!");
+    return;
+  }
+  
+  // Thuật toán random tiền thưởng: Chỉ số chẵn, tỷ lệ rơi vào 80-120đ cao (70%)
+  let rand = Math.random();
+  if(rand < 0.7) { 
+    currentReward = Math.floor(Math.random() * 21) * 2 + 80;  // Trả ra số chẵn từ 80 đến 120
+  } else { 
+    currentReward = Math.floor(Math.random() * 20) * 2 + 40;  // Trả ra số chẵn từ 40 đến 78
+  }
+
+  document.getElementById("jobRewardText").textContent = "💰 Tiền thưởng: " + currentReward + "đ";
+  document.getElementById("modal").classList.add("show");
+}
+
+function openTikTok(){
+  selectedUser = users[Math.floor(Math.random()*users.length)];
+  const link = "https://www.tiktok.com/@" + selectedUser;
+  window.open(link,"_blank");
+}
+
+function completeJob(){
+  const box = document.getElementById("jobBox");
+  box.innerHTML = `
+    <div class="spinner"></div>
+    <h2>Đang xử lý...</h2>
+    <p>Đang gửi kết quả job.</p>
+  `;
+
+  setTimeout(()=>{
+    // Tăng và lưu số lượng Job
+    jobCount++;
+    localStorage.setItem("jobCount", jobCount);
+    document.getElementById("tiktokProgress").textContent = jobCount + "/" + MAX_JOBS;
+
+    // Lưu lịch sử
+    const now = new Date().toLocaleString("vi-VN");
+    lastJob = "TikTok @" + (selectedUser || "ngẫu nhiên") + " (+" + currentReward + "đ) — Xong lúc " + now;
+    localStorage.setItem("lastJob",lastJob);
+    document.getElementById("historyText").textContent = lastJob;
+
+    box.innerHTML = `
+      <div style="font-size:50px">✅</div>
+      <h2>Hoàn thành!</h2>
+      <p class="success">
+        Bạn nhận được: ${currentReward}đ<br>
+        Kết quả đang chờ duyệt 1–3 ngày.
+      </p>
+      <button class="close" onclick="closeJob()">Đóng</button>
+    `;
+  },1000);
+}
+
+function closeJob(){
+  document.getElementById("modal").classList.remove("show");
+  setTimeout(resetModal,250);
+}
+
+function resetModal(){
+  document.getElementById("jobBox").innerHTML = `
+    <h2>🎵 Job TikTok</h2>
+    <div class="reward-badge" id="jobRewardText">💰 Tiền thưởng: 0đ</div>
+    <div class="task">
+      <b>Thao tác cần làm:</b><br>
+      1. Bấm <b>Mở TikTok</b> bên dưới.<br>
+      2. Thực hiện thao tác trên kênh TikTok được mở.<br>
+      3. Quay lại trang này.<br>
+      4. Bấm <b>Đã hoàn thành</b>.
+    </div>
+    <button class="open" onclick="openTikTok()">🎵 Mở TikTok</button>
+    <button class="done" onclick="completeJob()">✅ Đã hoàn thành</button>
+    <button class="close" onclick="closeJob()">Đóng</button>
+  `;
+}
+</script>
+
+</body>
+</html>
+```eof
+
+Mình đã hoàn thành các tính năng và cập nhật lại giao diện, nếu bạn cần điều chỉnh tỷ lệ tiền thưởng hay màu sắc nào đó, hãy nhắn lại để mình hỗ trợ nhé!
+ 
